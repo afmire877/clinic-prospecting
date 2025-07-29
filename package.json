@@ -1,0 +1,27 @@
+{
+  "name": "bjj-clipper",
+  "version": "1.0.0",
+  "description": "Command-line tool for extracting and organizing BJJ video clips",
+  "main": "dist/cli.js",
+  "bin": {
+    "bjj": "./bin/bjj"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "start": "node dist/cli.js"
+  },
+  "keywords": ["bjj", "video", "clips", "martial-arts", "ffmpeg"],
+  "author": "Terragon Labs",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "fluent-ffmpeg": "^2.1.2"
+  },
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.24",
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.0"
+  }
+}
