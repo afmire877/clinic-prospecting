@@ -1,6 +1,5 @@
-import * as ffmpeg from 'fluent-ffmpeg';
+import ffmpeg from 'fluent-ffmpeg';
 import { spawn } from 'child_process';
-import { promisify } from 'util';
 import { VideoInfo } from '../types';
 
 export async function checkFFmpegInstallation(): Promise<boolean> {
@@ -19,16 +18,25 @@ export async function checkFFmpegInstallation(): Promise<boolean> {
 
 export async function getVideoInfo(inputPath: string): Promise<VideoInfo> {
   return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(inputPath, (err, metadata) => {
+    ffmpeg.ffprobe(inputPath, (err: any, metadata: any) => {
       if (err) {
         reject(new Error(`Failed to get video info: ${err.message}`));
         return;
       }
       
-      const videoStream = metadata.streams.find(stream => stream.codec_type === 'video');
+      const videoStream = metadata.streams.find((stream: any) => stream.codec_type === 'video');
       if (!videoStream) {
         reject(new Error('No video stream found in file'));
         return;
+      }
+      
+      // Parse framerate safely
+      let framerate = 0;
+      if (videoStream.r_frame_rate) {
+        const [num, den] = videoStream.r_frame_rate.split('/').map(Number);
+        if (den && den !== 0) {
+          framerate = num / den;
+        }
       }
       
       resolve({
@@ -36,7 +44,7 @@ export async function getVideoInfo(inputPath: string): Promise<VideoInfo> {
         width: videoStream.width || 0,
         height: videoStream.height || 0,
         codec: videoStream.codec_name || 'unknown',
-        framerate: eval(videoStream.r_frame_rate || '0') || 0
+        framerate
       });
     });
   });
@@ -67,10 +75,10 @@ export async function extractClip(
     }
     
     command
-      .on('start', (commandLine) => {
+      .on('start', (commandLine: string) => {
         console.log('FFmpeg command:', commandLine);
       })
-      .on('progress', (progress) => {
+      .on('progress', (progress: any) => {
         if (onProgress && progress.percent) {
           onProgress(Math.round(progress.percent));
         }
@@ -78,7 +86,7 @@ export async function extractClip(
       .on('end', () => {
         resolve();
       })
-      .on('error', (err) => {
+      .on('error', (err: any) => {
         reject(new Error(`FFmpeg error: ${err.message}`));
       })
       .save(outputPath);
