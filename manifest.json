@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "LLM Markdown Copier",
+  "version": "1.0",
+  "description": "Copy current page as LLM-optimized markdown",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Copy as LLM Markdown"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+}
