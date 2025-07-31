@@ -1,6 +1,6 @@
-# LLM Markdown Copier Chrome Extension
+# llms.txt Page Copier Chrome Extension
 
-A Chrome extension that copies the current page content as LLM-optimized markdown, similar to an LLMs.txt file format.
+A Chrome extension that copies the current page content in the official [llmstxt.org](https://llmstxt.org) format standard.
 
 ## Installation
 
@@ -14,15 +14,17 @@ A Chrome extension that copies the current page content as LLM-optimized markdow
 
 1. Navigate to any webpage
 2. Click the extension icon in the toolbar
-3. Click "Copy Page as LLM Markdown" 
-4. The page content will be copied to your clipboard as optimized markdown
+3. Click "Copy Page as llms.txt" 
+4. The page content will be copied to your clipboard in llmstxt.org format
 
 ## Features
 
-- Extracts main content while filtering out navigation, ads, and footers
-- Converts HTML to clean markdown format
-- Includes page title and URL
-- Optimized for LLM consumption
+- Follows the official llmstxt.org format specification
+- Extracts page summary from meta descriptions or first paragraph
+- Includes page title as H1 header with optional blockquote summary
+- Filters out navigation, ads, and footer elements
+- Extracts and lists relevant links in proper format
+- Converts HTML to clean markdown with proper heading hierarchy
 - Simple one-click operation
 
 ## File Structure

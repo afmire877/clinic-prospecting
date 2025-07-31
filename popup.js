@@ -35,6 +35,52 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function extractPageContent() {
+  function extractPageSummary() {
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      return metaDescription.getAttribute('content');
+    }
+    
+    const metaProperty = document.querySelector('meta[property="og:description"]');
+    if (metaProperty) {
+      return metaProperty.getAttribute('content');
+    }
+    
+    const firstParagraph = document.querySelector('p');
+    if (firstParagraph && firstParagraph.textContent.length > 50) {
+      return firstParagraph.textContent.substring(0, 200).trim() + '...';
+    }
+    
+    return null;
+  }
+
+  function extractLinks() {
+    const links = [];
+    const linkElements = document.querySelectorAll('a[href]');
+    const seenUrls = new Set();
+    
+    linkElements.forEach(link => {
+      const href = link.getAttribute('href');
+      const text = link.textContent.trim();
+      
+      if (href && text && href !== '#' && !href.startsWith('javascript:') && !href.startsWith('mailto:')) {
+        let fullUrl;
+        try {
+          fullUrl = new URL(href, window.location.href).href;
+        } catch (e) {
+          return;
+        }
+        
+        if (!seenUrls.has(fullUrl) && text.length > 3 && text.length < 100) {
+          seenUrls.add(fullUrl);
+          links.push({ text, url: fullUrl });
+        }
+      }
+    });
+    
+    return links.slice(0, 10);
+  }
+
   function htmlToMarkdown(html) {
     let markdown = html;
     
@@ -42,11 +88,11 @@ function extractPageContent() {
     markdown = markdown.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
     markdown = markdown.replace(/<!--[\s\S]*?-->/g, '');
     
-    markdown = markdown.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n');
-    markdown = markdown.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n');
-    markdown = markdown.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n');
-    markdown = markdown.replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n\n');
-    markdown = markdown.replace(/<h5[^>]*>(.*?)<\/h5>/gi, '##### $1\n\n');
+    markdown = markdown.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '## $1\n\n');
+    markdown = markdown.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '### $1\n\n');
+    markdown = markdown.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '#### $1\n\n');
+    markdown = markdown.replace(/<h4[^>]*>(.*?)<\/h4>/gi, '##### $1\n\n');
+    markdown = markdown.replace(/<h5[^>]*>(.*?)<\/h5>/gi, '###### $1\n\n');
     markdown = markdown.replace(/<h6[^>]*>(.*?)<\/h6>/gi, '###### $1\n\n');
     
     markdown = markdown.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**');
@@ -120,12 +166,14 @@ function extractPageContent() {
 
   const title = document.title;
   const url = window.location.href;
+  const summary = extractPageSummary();
+  const links = extractLinks();
   
   const mainContent = document.querySelector('main') || 
                      document.querySelector('article') || 
                      document.querySelector('.content') || 
                      document.querySelector('#content') || 
-                     document.body;
+                     document.body.cloneNode(true);
   
   const navElements = mainContent.querySelectorAll('nav, .nav, .navigation, .sidebar, .menu');
   navElements.forEach(el => el.remove());
@@ -137,15 +185,27 @@ function extractPageContent() {
   adElements.forEach(el => el.remove());
   
   const html = mainContent.innerHTML;
-  const markdown = htmlToMarkdown(html);
+  const content = htmlToMarkdown(html);
   
-  const llmOptimizedMarkdown = `# ${title}
-
-**URL:** ${url}
-
-**Content:**
-
-${markdown}`;
+  let llmsTxtFormat = `# ${title}\n\n`;
   
-  return llmOptimizedMarkdown;
+  if (summary) {
+    llmsTxtFormat += `> ${summary}\n\n`;
+  }
+  
+  llmsTxtFormat += `Source: ${url}\n\n`;
+  
+  if (content.trim()) {
+    llmsTxtFormat += `${content}\n\n`;
+  }
+  
+  if (links.length > 0) {
+    llmsTxtFormat += `## Related Links\n\n`;
+    links.forEach(link => {
+      llmsTxtFormat += `- [${link.text}](${link.url})\n`;
+    });
+    llmsTxtFormat += '\n';
+  }
+  
+  return llmsTxtFormat.trim();
 }

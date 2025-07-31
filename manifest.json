@@ -1,15 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "LLM Markdown Copier",
+  "name": "llms.txt Page Copier",
   "version": "1.0",
-  "description": "Copy current page as LLM-optimized markdown",
+  "description": "Copy current page in llmstxt.org format",
   "permissions": [
     "activeTab",
     "scripting"
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Copy as LLM Markdown"
+    "default_title": "Copy as llms.txt"
   },
   "content_scripts": [
     {
