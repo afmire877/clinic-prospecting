@@ -1,13 +1,47 @@
 document.addEventListener('DOMContentLoaded', function() {
   const copyButton = document.getElementById('copyMarkdown');
   const status = document.getElementById('status');
+  const settingsToggle = document.getElementById('settingsToggle');
+  const settingsContent = document.getElementById('settingsContent');
+  const openaiKeyInput = document.getElementById('openaiKey');
+  const saveSettingsButton = document.getElementById('saveSettings');
 
+  // Load saved settings
+  loadSettings();
+
+  // Settings toggle functionality
+  settingsToggle.addEventListener('click', function() {
+    const isExpanded = settingsContent.classList.contains('expanded');
+    if (isExpanded) {
+      settingsContent.classList.remove('expanded');
+      settingsToggle.classList.remove('expanded');
+    } else {
+      settingsContent.classList.add('expanded');
+      settingsToggle.classList.add('expanded');
+    }
+  });
+
+  // Save settings
+  saveSettingsButton.addEventListener('click', async function() {
+    const apiKey = openaiKeyInput.value.trim();
+    await chrome.storage.sync.set({ openaiApiKey: apiKey });
+    
+    status.textContent = apiKey ? 'Settings saved! AI enhancement enabled.' : 'Settings saved! AI enhancement disabled.';
+    status.className = 'status success';
+    
+    setTimeout(() => {
+      status.textContent = '';
+    }, 2000);
+  });
+
+  // Main copy functionality
   copyButton.addEventListener('click', async function() {
     try {
       status.textContent = 'Processing...';
       status.className = 'status';
       
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const { openaiApiKey } = await chrome.storage.sync.get(['openaiApiKey']);
       
       const results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -15,10 +49,30 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       
       if (results && results[0] && results[0].result) {
-        const { content: markdown, tokenCount } = results[0].result;
-        await navigator.clipboard.writeText(markdown);
-        status.textContent = `Copied! (~${tokenCount.toLocaleString()} tokens)`;
-        status.className = 'status success';
+        let { content: markdown, tokenCount } = results[0].result;
+        
+        // If OpenAI API key is available, enhance the content
+        if (openaiApiKey && openaiApiKey.startsWith('sk-')) {
+          status.textContent = 'Enhancing with AI...';
+          try {
+            const enhanced = await enhanceWithOpenAI(markdown, openaiApiKey);
+            markdown = enhanced.content;
+            tokenCount = enhanced.tokenCount;
+            
+            await navigator.clipboard.writeText(markdown);
+            status.textContent = `Copied! (~${tokenCount.toLocaleString()} tokens) - AI Enhanced`;
+            status.className = 'status success';
+          } catch (aiError) {
+            console.warn('AI enhancement failed, using original:', aiError);
+            await navigator.clipboard.writeText(markdown);
+            status.textContent = `Copied! (~${tokenCount.toLocaleString()} tokens) - AI failed, used original`;
+            status.className = 'status success';
+          }
+        } else {
+          await navigator.clipboard.writeText(markdown);
+          status.textContent = `Copied! (~${tokenCount.toLocaleString()} tokens)`;
+          status.className = 'status success';
+        }
         
         setTimeout(() => {
           status.textContent = '';
@@ -32,6 +86,68 @@ document.addEventListener('DOMContentLoaded', function() {
       status.className = 'status error';
     }
   });
+
+  async function loadSettings() {
+    const { openaiApiKey } = await chrome.storage.sync.get(['openaiApiKey']);
+    if (openaiApiKey) {
+      openaiKeyInput.value = openaiApiKey;
+    }
+  }
+
+  async function enhanceWithOpenAI(content, apiKey) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a content cleanup specialist. Clean up the provided llms.txt format content by:
+1. Removing advertisements, promotional content, and irrelevant information
+2. Improving markdown formatting and structure
+3. Fixing any formatting issues or broken elements
+4. Keeping all essential information and maintaining the llms.txt format
+5. Ensuring proper heading hierarchy
+6. Remove navigation elements, cookie notices, and footer content
+
+Return only the cleaned content in proper llms.txt format. Do not add explanations or comments.`
+          },
+          {
+            role: 'user',
+            content: content
+          }
+        ],
+        max_tokens: 4000,
+        temperature: 0.1
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const enhancedContent = data.choices[0].message.content.trim();
+    
+    // Recalculate token count for enhanced content
+    const tokenCount = estimateTokenCount(enhancedContent);
+    
+    return {
+      content: enhancedContent,
+      tokenCount: tokenCount
+    };
+  }
+
+  function estimateTokenCount(text) {
+    const avgCharsPerToken = 4;
+    const cleanText = text.replace(/\s+/g, ' ').trim();
+    const charCount = cleanText.length;
+    return Math.ceil(charCount / avgCharsPerToken);
+  }
 });
 
 function extractPageContent() {

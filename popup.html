@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <style>
     body {
-      width: 300px;
+      width: 320px;
       padding: 20px;
       font-family: Arial, sans-serif;
     }
@@ -22,6 +22,14 @@
     button:hover {
       background: #3367d6;
     }
+    button.secondary {
+      background: #f8f9fa;
+      color: #666;
+      border: 1px solid #dadce0;
+    }
+    button.secondary:hover {
+      background: #f1f3f4;
+    }
     .status {
       text-align: center;
       margin-top: 10px;
@@ -36,11 +44,106 @@
     .error {
       color: #ea4335;
     }
+    .settings {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #dadce0;
+    }
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .settings-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+    }
+    .toggle-icon {
+      font-size: 12px;
+      color: #666;
+      transition: transform 0.2s;
+    }
+    .settings-content {
+      display: none;
+    }
+    .settings-content.expanded {
+      display: block;
+    }
+    .expanded .toggle-icon {
+      transform: rotate(180deg);
+    }
+    .input-group {
+      margin-bottom: 10px;
+    }
+    .input-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .input-field {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #4285f4;
+    }
+    .help-text {
+      font-size: 11px;
+      color: #999;
+      margin-top: 5px;
+      line-height: 1.3;
+    }
+    .ai-badge {
+      display: inline-block;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 5px;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
   <button id="copyMarkdown">Copy Page as llms.txt</button>
   <div id="status" class="status"></div>
+  
+  <div class="settings">
+    <div class="settings-header" id="settingsToggle">
+      <div class="settings-title">
+        AI Enhancement<span class="ai-badge">NEW</span>
+      </div>
+      <div class="toggle-icon">▼</div>
+    </div>
+    
+    <div class="settings-content" id="settingsContent">
+      <div class="input-group">
+        <label class="input-label" for="openaiKey">OpenAI API Key (Optional)</label>
+        <input 
+          type="password" 
+          id="openaiKey" 
+          class="input-field" 
+          placeholder="sk-..."
+        >
+        <div class="help-text">
+          When provided, AI will clean up content, remove ads, and improve formatting. This costs ~$0.01-0.05 per page.
+        </div>
+      </div>
+      
+      <button id="saveSettings" class="secondary">Save Settings</button>
+    </div>
+  </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>
