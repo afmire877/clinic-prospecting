@@ -15,14 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       
       if (results && results[0] && results[0].result) {
-        const markdown = results[0].result;
+        const { content: markdown, tokenCount } = results[0].result;
         await navigator.clipboard.writeText(markdown);
-        status.textContent = 'Copied to clipboard!';
+        status.textContent = `Copied! (~${tokenCount.toLocaleString()} tokens)`;
         status.className = 'status success';
         
         setTimeout(() => {
           status.textContent = '';
-        }, 2000);
+        }, 3000);
       } else {
         throw new Error('Failed to extract content');
       }
@@ -35,6 +35,21 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function extractPageContent() {
+  function estimateTokenCount(text) {
+    // Rough estimation: 1 token ≈ 4 characters for English text
+    // This is an approximation and may vary based on the actual tokenizer used
+    const avgCharsPerToken = 4;
+    
+    // Count characters, excluding excessive whitespace
+    const cleanText = text.replace(/\s+/g, ' ').trim();
+    const charCount = cleanText.length;
+    
+    // Basic token estimation
+    const estimatedTokens = Math.ceil(charCount / avgCharsPerToken);
+    
+    return estimatedTokens;
+  }
+
   function extractPageSummary() {
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
@@ -207,5 +222,11 @@ function extractPageContent() {
     llmsTxtFormat += '\n';
   }
   
-  return llmsTxtFormat.trim();
+  const finalContent = llmsTxtFormat.trim();
+  const tokenCount = estimateTokenCount(finalContent);
+  
+  return {
+    content: finalContent,
+    tokenCount: tokenCount
+  };
 }

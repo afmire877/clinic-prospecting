@@ -16,6 +16,7 @@ A Chrome extension that copies the current page content in the official [llmstxt
 2. Click the extension icon in the toolbar
 3. Click "Copy Page as llms.txt" 
 4. The page content will be copied to your clipboard in llmstxt.org format
+5. The extension will display the estimated token count of the copied content
 
 ## Features
 
@@ -25,6 +26,7 @@ A Chrome extension that copies the current page content in the official [llmstxt
 - Filters out navigation, ads, and footer elements
 - Extracts and lists relevant links in proper format
 - Converts HTML to clean markdown with proper heading hierarchy
+- **Token counting**: Displays estimated token count after copying
 - Simple one-click operation
 
 ## File Structure
