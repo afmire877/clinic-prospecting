@@ -168,11 +168,27 @@ function _aws_key_expiry_format_warning() {
         if [[ $time_diff -lt 0 ]]; then
             # Keys have expired
             local days_expired=$((-days_remaining))
-            printf "$AWS_KEY_EXPIRY_EXPIRED_FORMAT" "${days_expired}d ago"
+            local hours_expired=$((-hours_remaining))
+            local minutes_expired=$((((-time_diff) % 3600) / 60))
+            
+            if [[ $days_expired -eq 0 ]]; then
+                if [[ $hours_expired -eq 0 ]]; then
+                    printf "$AWS_KEY_EXPIRY_EXPIRED_FORMAT" "${minutes_expired} mins ago"
+                else
+                    printf "$AWS_KEY_EXPIRY_EXPIRED_FORMAT" "${hours_expired}h ago"
+                fi
+            else
+                printf "$AWS_KEY_EXPIRY_EXPIRED_FORMAT" "${days_expired}d ago"
+            fi
         elif [[ $days_remaining -le $AWS_KEY_EXPIRY_WARNING_DAYS ]]; then
             # Keys expire soon
             if [[ $days_remaining -eq 0 ]]; then
-                printf "$AWS_KEY_EXPIRY_FORMAT" "in ${hours_remaining}h"
+                if [[ $hours_remaining -eq 0 ]]; then
+                    local minutes_remaining=$(((time_diff % 3600) / 60))
+                    printf "$AWS_KEY_EXPIRY_FORMAT" "in ${minutes_remaining} mins"
+                else
+                    printf "$AWS_KEY_EXPIRY_FORMAT" "in ${hours_remaining}h"
+                fi
             else
                 printf "$AWS_KEY_EXPIRY_FORMAT" "in ${days_remaining}d"
             fi
