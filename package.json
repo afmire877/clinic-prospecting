@@ -1,0 +1,35 @@
+{
+  "name": "ppt-to-mp4",
+  "version": "1.0.0",
+  "description": "CLI tool to convert PowerPoint presentations to MP4 video",
+  "main": "dist/cli.js",
+  "bin": {
+    "ppt2mp4": "./bin/ppt2mp4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "start": "node dist/cli.js"
+  },
+  "keywords": [
+    "ppt",
+    "pptx",
+    "mp4",
+    "video",
+    "converter",
+    "presentation",
+    "cli"
+  ],
+  "author": "Terragon Labs",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "fluent-ffmpeg": "^2.1.2"
+  },
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.24",
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.0"
+  }
+}
