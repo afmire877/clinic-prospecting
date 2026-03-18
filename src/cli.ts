@@ -18,6 +18,7 @@ program
   .option('-o, --output <dir>', 'Output directory', '.')
   .option('--serve', 'Start a local HTTP server for iPhone installation')
   .option('--port <port>', 'Server port', '8080')
+  .option('--lockdown', 'Make profile hard to remove (adds removal password)')
   .action((opts) => {
     generate({
       apps: opts.app,
@@ -27,6 +28,7 @@ program
       schedule: opts.schedule,
       serve: opts.serve,
       port: parseInt(opts.port, 10),
+      lockdown: opts.lockdown,
     });
   });
 

@@ -34,6 +34,9 @@ mdm-scheduler generate --preset social --preset video --app com.some.app --sched
 
 # Generate and serve over local network for iPhone installation
 mdm-scheduler generate --preset social --serve --port 8080
+
+# LOCKDOWN MODE: make the profile extremely hard to remove
+mdm-scheduler generate --preset social --schedule "Mon-Fri@09:00-17:00" --name "Focus Mode" --lockdown
 ```
 
 ### List available presets
@@ -66,9 +69,29 @@ Examples: Mon-Fri@09:00-17:00
 
 To remove the block, just delete the profile from the same settings page.
 
+### Lockdown mode
+
+Use `--lockdown` to make the profile extremely difficult to remove:
+
+```bash
+mdm-scheduler generate --preset social --lockdown
+```
+
+This does two things:
+1. Sets `PayloadRemovalDisallowed` to `true`
+2. Adds a `com.apple.profileRemovalPassword` payload with a random 43-character password
+
+A separate `*-REMOVAL-KEY.txt` file is generated with the password. To make removal truly painful:
+- **Give the key file to a friend** and tell them not to share it until a certain date
+- **Put it on a USB drive** and store it somewhere inconvenient
+- **Email it to yourself** with a delayed/scheduled send
+- **Print it, seal it in an envelope**, and stash it away
+
+Without the password, you cannot remove the profile from Settings.
+
 ## Important Notes
 
 - **App Restriction profiles require a supervised device.** Personal iPhones are typically not supervised. The restriction payload will install but won't block apps unless the device is supervised (via Apple Configurator or DEP).
 - **Reminder profiles work on all devices** and serve as a visible nudge in your Settings.
-- **Profiles can always be removed** — `PayloadRemovalDisallowed` is set to `false` so you stay in control.
+- **Lockdown profiles** require the removal password to uninstall. Without it, the profile is stuck on your device.
 - The schedule in the profile is metadata/documentation only. iOS doesn't natively support time-based profile activation. For true scheduling, pair with **Shortcuts automations** to remind yourself to install/remove profiles at specific times.

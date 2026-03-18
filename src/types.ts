@@ -15,6 +15,7 @@ export interface BlockProfile {
   bundleIds: string[];
   schedule?: ScheduleEntry;
   organization?: string;
+  lockdown?: boolean;
 }
 
 export interface ProfileOptions {
@@ -26,10 +27,18 @@ export interface ProfileOptions {
   serve?: boolean;
   port?: number;
   list?: boolean;
+  lockdown?: boolean;
+}
+
+export interface LockdownInfo {
+  removalPassword: string;
+  profileName: string;
+  generatedAt: string;
 }
 
 export interface GeneratedProfile {
   filename: string;
   xml: string;
   displayName: string;
+  lockdownInfo?: LockdownInfo;
 }
