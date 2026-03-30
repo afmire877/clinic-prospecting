@@ -1,0 +1,192 @@
+{
+  "name": "Avro Schema",
+  "scopeName": "source.avsc",
+  "fileTypes": ["avsc"],
+  "patterns": [
+    { "include": "#value" }
+  ],
+  "repository": {
+    "value": {
+      "patterns": [
+        { "include": "#object" },
+        { "include": "#array" },
+        { "include": "#string" },
+        { "include": "#number" },
+        { "include": "#constant" }
+      ]
+    },
+    "object": {
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": { "0": { "name": "punctuation.definition.dictionary.begin.avsc" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.dictionary.end.avsc" } },
+      "patterns": [
+        { "include": "#avro-type-key" },
+        { "include": "#avro-name-key" },
+        { "include": "#avro-namespace-key" },
+        { "include": "#avro-doc-key" },
+        { "include": "#avro-fields-key" },
+        { "include": "#avro-symbols-key" },
+        { "include": "#avro-items-key" },
+        { "include": "#avro-values-key" },
+        { "include": "#avro-logicaltype-key" },
+        { "include": "#avro-default-key" },
+        { "include": "#avro-aliases-key" },
+        { "include": "#avro-order-key" },
+        { "include": "#avro-size-key" },
+        { "include": "#object-key" },
+        { "include": "#value" },
+        { "include": "#comma" }
+      ]
+    },
+    "array": {
+      "begin": "\\[",
+      "end": "\\]",
+      "beginCaptures": { "0": { "name": "punctuation.definition.array.begin.avsc" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.array.end.avsc" } },
+      "patterns": [
+        { "include": "#value" },
+        { "include": "#comma" }
+      ]
+    },
+    "avro-type-key": {
+      "match": "(\"type\")\\s*(:)\\s*(\"(?:record|error|enum|fixed|array|map|union)\")",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" },
+        "3": { "name": "entity.name.type.avsc" }
+      }
+    },
+    "avro-name-key": {
+      "match": "(\"name\")\\s*(:)\\s*(\"[^\"]*\")",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" },
+        "3": { "name": "entity.name.class.avsc" }
+      }
+    },
+    "avro-namespace-key": {
+      "match": "(\"namespace\")\\s*(:)\\s*(\"[^\"]*\")",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" },
+        "3": { "name": "entity.name.namespace.avsc string.quoted.double.avsc" }
+      }
+    },
+    "avro-doc-key": {
+      "match": "(\"doc\")\\s*(:)\\s*(\"[^\"]*\")",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" },
+        "3": { "name": "comment.block.documentation.avsc" }
+      }
+    },
+    "avro-fields-key": {
+      "match": "(\"fields\")\\s*(:)",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.control.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" }
+      }
+    },
+    "avro-symbols-key": {
+      "match": "(\"symbols\")\\s*(:)",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.control.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" }
+      }
+    },
+    "avro-items-key": {
+      "match": "(\"items\")\\s*(:)",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" }
+      }
+    },
+    "avro-values-key": {
+      "match": "(\"values\")\\s*(:)",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" }
+      }
+    },
+    "avro-logicaltype-key": {
+      "match": "(\"logicalType\")\\s*(:)\\s*(\"[^\"]*\")",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc keyword.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" },
+        "3": { "name": "support.type.avsc" }
+      }
+    },
+    "avro-default-key": {
+      "match": "(\"default\")\\s*(:)",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc variable.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" }
+      }
+    },
+    "avro-aliases-key": {
+      "match": "(\"aliases\")\\s*(:)",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc variable.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" }
+      }
+    },
+    "avro-order-key": {
+      "match": "(\"order\")\\s*(:)\\s*(\"(?:ascending|descending|ignore)\")",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc variable.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" },
+        "3": { "name": "constant.language.avsc" }
+      }
+    },
+    "avro-size-key": {
+      "match": "(\"size\")\\s*(:)\\s*(\\d+)",
+      "captures": {
+        "1": { "name": "support.type.property-name.avsc variable.other.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" },
+        "3": { "name": "constant.numeric.avsc" }
+      }
+    },
+    "object-key": {
+      "match": "(\"[^\"]*\")\\s*(:)",
+      "captures": {
+        "1": { "name": "string.quoted.double.avsc support.type.property-name.avsc" },
+        "2": { "name": "punctuation.separator.dictionary.key-value.avsc" }
+      }
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.avsc",
+          "match": "\"(?:null|boolean|int|long|float|double|bytes|string)\"",
+          "captures": { "0": { "name": "support.type.primitive.avsc" } }
+        },
+        {
+          "name": "string.quoted.double.avsc",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.avsc" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.avsc" } },
+          "patterns": [
+            {
+              "name": "constant.character.escape.avsc",
+              "match": "\\\\(?:[\"\\\\/bfnrt]|u[0-9a-fA-F]{4})"
+            }
+          ]
+        }
+      ]
+    },
+    "number": {
+      "name": "constant.numeric.avsc",
+      "match": "-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?"
+    },
+    "constant": {
+      "name": "constant.language.avsc",
+      "match": "\\b(?:true|false|null)\\b"
+    },
+    "comma": {
+      "match": ",",
+      "name": "punctuation.separator.dictionary.pair.avsc"
+    }
+  }
+}
