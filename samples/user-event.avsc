@@ -1,0 +1,144 @@
+{
+  "type": "record",
+  "name": "UserEvent",
+  "namespace": "com.example.events",
+  "doc": "Represents a user interaction event captured by the analytics platform. Used for tracking user behavior across all product surfaces.",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "Unique identifier for this event (UUID v4)"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "When the event occurred, in milliseconds since epoch"
+    },
+    {
+      "name": "userId",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The authenticated user ID, null for anonymous events"
+    },
+    {
+      "name": "sessionId",
+      "type": "string",
+      "doc": "Browser/app session identifier"
+    },
+    {
+      "name": "eventType",
+      "type": {
+        "type": "enum",
+        "name": "EventType",
+        "doc": "Classification of user interaction types",
+        "symbols": [
+          "PAGE_VIEW",
+          "CLICK",
+          "FORM_SUBMIT",
+          "SCROLL",
+          "VIDEO_PLAY",
+          "VIDEO_PAUSE",
+          "PURCHASE",
+          "SIGN_UP",
+          "SIGN_IN",
+          "SIGN_OUT"
+        ]
+      },
+      "doc": "The type of user interaction"
+    },
+    {
+      "name": "page",
+      "type": {
+        "type": "record",
+        "name": "PageInfo",
+        "doc": "Information about the page where the event occurred",
+        "fields": [
+          {
+            "name": "url",
+            "type": "string",
+            "doc": "Full URL of the page"
+          },
+          {
+            "name": "title",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "Page title from the HTML document"
+          },
+          {
+            "name": "referrer",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "Referring URL, if any"
+          }
+        ]
+      },
+      "doc": "Page context for this event"
+    },
+    {
+      "name": "device",
+      "type": {
+        "type": "record",
+        "name": "DeviceInfo",
+        "doc": "Information about the user's device",
+        "fields": [
+          {
+            "name": "userAgent",
+            "type": "string"
+          },
+          {
+            "name": "deviceType",
+            "type": {
+              "type": "enum",
+              "name": "DeviceType",
+              "symbols": ["DESKTOP", "MOBILE", "TABLET", "OTHER"]
+            }
+          },
+          {
+            "name": "screenResolution",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "Screen resolution in WxH format (e.g. 1920x1080)"
+          },
+          {
+            "name": "language",
+            "type": "string",
+            "default": "en-US",
+            "doc": "Browser language preference"
+          }
+        ]
+      }
+    },
+    {
+      "name": "properties",
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "default": {},
+      "doc": "Arbitrary key-value properties attached to this event"
+    },
+    {
+      "name": "tags",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "default": [],
+      "doc": "Tags for categorization and filtering"
+    },
+    {
+      "name": "monetaryValue",
+      "type": ["null", {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 10,
+        "scale": 2
+      }],
+      "default": null,
+      "doc": "Monetary value associated with this event (e.g. purchase amount)"
+    }
+  ]
+}

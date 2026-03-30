@@ -1,0 +1,118 @@
+{
+  "name": "avro-schema-viewer",
+  "displayName": "Avro Schema Viewer",
+  "description": "Beautiful visual explorer for Apache Avro schemas — tree view, rendered documentation, and syntax highlighting for .avsc and .json files",
+  "version": "0.1.0",
+  "publisher": "bjj-clipper",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "avro",
+    "avsc",
+    "schema",
+    "apache avro",
+    "data serialization",
+    "kafka"
+  ],
+  "activationEvents": [
+    "onLanguage:avsc",
+    "onLanguage:json",
+    "workspaceContains:**/*.avsc"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "avsc",
+        "aliases": [
+          "Avro Schema",
+          "avsc"
+        ],
+        "extensions": [
+          ".avsc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "avsc",
+        "scopeName": "source.avsc",
+        "path": "./syntaxes/avsc.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "avroSchemaViewer.openPreview",
+        "title": "Avro: Open Schema Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "avroSchemaViewer.openPreviewToSide",
+        "title": "Avro: Open Schema Preview to the Side",
+        "icon": "$(open-preview)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceExtname == .avsc",
+          "command": "avroSchemaViewer.openPreviewToSide",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == .json",
+          "command": "avroSchemaViewer.openPreviewToSide",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "when": "resourceExtname == .avsc",
+          "command": "avroSchemaViewer.openPreview",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == .json",
+          "command": "avroSchemaViewer.openPreview",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "avroSchemaExplorer",
+          "title": "Avro Schema",
+          "icon": "$(symbol-structure)"
+        }
+      ]
+    },
+    "views": {
+      "avroSchemaExplorer": [
+        {
+          "id": "avroSchemaOutline",
+          "name": "Schema Outline"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --minify",
+    "watch": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --watch",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.0"
+  }
+}
