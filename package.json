@@ -1,7 +1,7 @@
 {
   "name": "avro-schema-viewer",
   "displayName": "Avro Schema Viewer",
-  "description": "Beautiful visual explorer for Apache Avro schemas — tree view, rendered documentation, and syntax highlighting for .avsc files",
+  "description": "Beautiful visual explorer for Apache Avro schemas — tree view, rendered documentation, and syntax highlighting for .avsc and .json files",
   "version": "0.1.0",
   "publisher": "bjj-clipper",
   "engines": {
@@ -22,6 +22,7 @@
   ],
   "activationEvents": [
     "onLanguage:avsc",
+    "onLanguage:json",
     "workspaceContains:**/*.avsc"
   ],
   "main": "./dist/extension.js",
@@ -64,11 +65,21 @@
           "when": "resourceExtname == .avsc",
           "command": "avroSchemaViewer.openPreviewToSide",
           "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == .json",
+          "command": "avroSchemaViewer.openPreviewToSide",
+          "group": "navigation"
         }
       ],
       "explorer/context": [
         {
           "when": "resourceExtname == .avsc",
+          "command": "avroSchemaViewer.openPreview",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceExtname == .json",
           "command": "avroSchemaViewer.openPreview",
           "group": "navigation"
         }

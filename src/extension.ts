@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { SchemaWebviewProvider } from "./schemaWebview";
 import { SchemaTreeProvider } from "./schemaTreeView";
+import { isAvroDocument } from "./avroDetector";
 
 export function activate(context: vscode.ExtensionContext) {
   const webviewProvider = new SchemaWebviewProvider(context.extensionUri);
@@ -16,35 +17,35 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("avroSchemaViewer.openPreview", () => {
       const editor = vscode.window.activeTextEditor;
-      if (editor && isAvscDocument(editor.document)) {
+      if (editor && isAvroDocument(editor.document)) {
         webviewProvider.openPreview(editor.document, false);
       } else {
-        vscode.window.showWarningMessage("Open an .avsc file to preview its schema.");
+        vscode.window.showWarningMessage(
+          "Open an .avsc or .json file containing an Avro schema to preview it."
+        );
       }
     }),
 
     vscode.commands.registerCommand("avroSchemaViewer.openPreviewToSide", () => {
       const editor = vscode.window.activeTextEditor;
-      if (editor && isAvscDocument(editor.document)) {
+      if (editor && isAvroDocument(editor.document)) {
         webviewProvider.openPreview(editor.document, true);
       } else {
-        vscode.window.showWarningMessage("Open an .avsc file to preview its schema.");
+        vscode.window.showWarningMessage(
+          "Open an .avsc or .json file containing an Avro schema to preview it."
+        );
       }
     })
   );
 
-  // Auto-open preview when an .avsc file is opened (optional, triggered by command)
+  // Refresh tree when relevant files are opened
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument((doc) => {
-      if (isAvscDocument(doc)) {
+      if (isAvroDocument(doc)) {
         treeProvider.refresh();
       }
     })
   );
-}
-
-function isAvscDocument(doc: vscode.TextDocument): boolean {
-  return doc.fileName.endsWith(".avsc") || doc.languageId === "avsc";
 }
 
 export function deactivate() {}

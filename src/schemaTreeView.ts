@@ -12,6 +12,7 @@ import {
   isNullable,
   unwrapNullable,
 } from "./avroParser";
+import { isAvroDocument } from "./avroDetector";
 
 type SchemaNode =
   | { kind: "record"; record: AvroRecord }
@@ -33,7 +34,7 @@ export class SchemaTreeProvider implements vscode.TreeDataProvider<SchemaNode> {
     this.refresh();
 
     vscode.window.onDidChangeActiveTextEditor((editor) => {
-      if (editor && this.isAvscFile(editor.document)) {
+      if (editor && this.isAvroFile(editor.document)) {
         this.activeEditor = editor;
         this.refresh();
       }
@@ -47,7 +48,7 @@ export class SchemaTreeProvider implements vscode.TreeDataProvider<SchemaNode> {
   }
 
   refresh(): void {
-    if (this.activeEditor && this.isAvscFile(this.activeEditor.document)) {
+    if (this.activeEditor && this.isAvroFile(this.activeEditor.document)) {
       const parsed = parseAvroSchema(this.activeEditor.document.getText());
       this.root = parsed.root;
     } else {
@@ -56,8 +57,8 @@ export class SchemaTreeProvider implements vscode.TreeDataProvider<SchemaNode> {
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  private isAvscFile(doc: vscode.TextDocument): boolean {
-    return doc.fileName.endsWith(".avsc") || doc.languageId === "avsc";
+  private isAvroFile(doc: vscode.TextDocument): boolean {
+    return isAvroDocument(doc);
   }
 
   getTreeItem(element: SchemaNode): vscode.TreeItem {
